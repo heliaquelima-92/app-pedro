@@ -1,121 +1,114 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-function App() {
-  const [count, setCount] = useState(0)
+const dadosLetras = [
+  {
+    id: 'A',
+    imagem: '/imagens/abelha.png',
+    audioPergunta: '/audios/pergunta-a.mp3',
+    audioDica: '/audios/dica-a.mp3',
+    audioSucesso: '/audios/sucesso-a.mp3',
+  },
+  {
+    id: 'B',
+    imagem: '/imagens/bola.png',
+    audioPergunta: '/audios/pergunta-b.mp3',
+    audioDica: '/audios/dica-b.mp3',
+    audioSucesso: '/audios/sucesso-b.mp3',
+  },
+  {
+    id: 'C',
+    imagem: '/imagens/cachorro.png',
+    audioPergunta: '/audios/pergunta-c.mp3',
+    audioDica: '/audios/dica-c.mp3',
+    audioSucesso: '/audios/sucesso-c.mp3',
+  }
+];
+
+export default function App() {
+  const [fase, setFase] = useState('inicio');
+  const [letraAlvo, setLetraAlvo] = useState(dadosLetras[0]);
+  const [mostrarDica, setMostrarDica] = useState(false);
+
+  const tocarAudio = (caminho) => {
+    const audio = new Audio(caminho);
+    audio.play();
+  };
+
+  const iniciarJogo = () => {
+    tocarAudio('/audios/boas-vindas.mp3');
+    setTimeout(() => {
+      setFase('jogando');
+      tocarAudio(letraAlvo.audioPergunta);
+    }, 2500); 
+  };
+
+  const lidarComClique = (letraClicada) => {
+    if (letraClicada === letraAlvo.id) {
+      setMostrarDica(false);
+      tocarAudio(letraAlvo.audioSucesso);
+      setTimeout(() => alert("Foi para a próxima letra! (Em breve)"), 3000); 
+    } else {
+      setMostrarDica(true);
+      tocarAudio(letraAlvo.audioDica);
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#F0F8FF', fontFamily: 'sans-serif' }}>
+      
+      {fase === 'inicio' && (
+        <motion.button 
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={iniciarJogo}
+          style={{ fontSize: '3rem', padding: '20px 40px', borderRadius: '20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }}
         >
-          Count is {count}
-        </button>
-      </section>
+          ▶️ Jogar
+        </motion.button>
+      )}
 
-      <div className="ticks"></div>
+      {fase === 'jogando' && (
+        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
+          {['A', 'B', 'C'].map((letra) => (
+            <div key={letra} style={{ position: 'relative' }}>
+              
+              {mostrarDica && letra === letraAlvo.id && (
+                <motion.img 
+                  initial={{ scale: 0, y: 50 }}
+                  animate={{ scale: 1, y: -20 }}
+                  src={letraAlvo.imagem} 
+                  alt="Dica"
+                  style={{ position: 'absolute', top: '-120px', left: '-20px', width: '150px', zIndex: 10 }}
+                />
+              )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => lidarComClique(letra)}
+                style={{
+                  width: '200px',
+                  height: '250px',
+                  fontSize: '8rem',
+                  fontWeight: 'bold',
+                  color: '#333',
+                  backgroundColor: '#FFF',
+                  borderRadius: '20px',
+                  border: '5px solid #DDD',
+                  cursor: 'pointer',
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                {letra}
+              </motion.button>
+            </div>
+          ))}
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      )}
+    </div>
+  );
 }
-
-export default App
