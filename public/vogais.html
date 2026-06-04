@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vogais - PigoKids</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: white;
+      padding: 20px;
+    }
+    .container { max-width: 700px; margin: 0 auto; text-align: center; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .back-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.3); }
+    h1 { font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+    .progress-bar {
+      width: 100%; height: 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      border-radius: 10px;
+      transition: width 0.5s;
+    }
+    .card {
+      background: linear-gradient(135deg, #f472b6, #e11d48);
+      border-radius: 30px;
+      padding: 40px 20px;
+      margin-bottom: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+    .letra { font-size: 7rem; font-weight: 900; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); margin-bottom: 10px; }
+    .emoji { font-size: 4rem; margin-bottom: 10px; }
+    .palavra { font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; }
+    .hint { opacity: 0.8; margin-bottom: 15px; font-size: 0.95rem; }
+    .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      background: linear-gradient(145deg, #FF6B6B, #ee5a5a);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #c44444, 0 10px 20px rgba(0,0,0,0.2);
+      transition: all 0.1s;
+    }
+    .btn:active { transform: translateY(6px); box-shadow: 0 0 0 #c44444; }
+    .btn-green {
+      background: linear-gradient(145deg, #4ECDC4, #3dbdb5);
+      box-shadow: 0 6px 0 #2a9d96, 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .btn-green:active { box-shadow: 0 0 0 #2a9d96; }
+    .nav { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+    .nav-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.3); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-btn.finish {
+      background: white;
+      color: #9333ea;
+    }
+    .complete {
+      text-align: center;
+      padding: 30px;
+    }
+    .complete .trophy { font-size: 4rem; margin-bottom: 10px; }
+    .complete h2 { font-size: 2rem; margin-bottom: 10px; }
+    .complete p { font-size: 1.2rem; opacity: 0.9; }
+    .stars-big { font-size: 2.5rem; margin-top: 15px; }
+    @media (max-width: 600px) {
+      .letra { font-size: 5rem; }
+      .emoji { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="back-btn">← Voltar</a>
+      <h1>🔤 Vogais</h1>
+      <div style="width:80px"></div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:20%"></div></div>
+
+    <div id="content">
+      <div class="card" id="card">
+        <div class="letra" id="letra">A</div>
+        <div class="emoji" id="emoji">🍍</div>
+        <div class="palavra" id="palavra">A de Abacaxi</div>
+        <div class="hint" id="hint">Vamos lá, Pedro! Você consegue! 💪</div>
+        <div class="btn-group">
+          <button class="btn" onclick="speak(letraAtual.letra)">🔊 A</button>
+          <button class="btn btn-green" onclick="speak(letraAtual.palavra)">🔊 Abacaxi</button>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="nav-btn" id="prevBtn" onclick="prev()" disabled>← Anterior</button>
+        <button class="nav-btn finish" id="nextBtn" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <div id="complete" class="complete" style="display:none">
+      <div class="trophy">🎉🏆🎉</div>
+      <h2>Pedro, você completou as vogais! Que orgulho! 🏅</h2>
+      <p>Muito bem, Pedro! 🎉</p>
+      <div class="stars-big">⭐⭐⭐</div>
+      <br><br>
+      <a href="index.html" class="back-btn">Voltar ao Menu</a>
+    </div>
+  </div>
+
+  <script>
+    const vogais = [
+      { letra: 'A', palavra: 'Abacaxi', emoji: '🍍', cor: 'linear-gradient(135deg, #f472b6, #e11d48)' },
+      { letra: 'E', palavra: 'Elefante', emoji: '🐘', cor: 'linear-gradient(135deg, #60a5fa, #4f46e5)' },
+      { letra: 'I', palavra: 'Iglu', emoji: '🧊', cor: 'linear-gradient(135deg, #22d3ee, #0d9488)' },
+      { letra: 'O', palavra: 'Ovo', emoji: '🥚', cor: 'linear-gradient(135deg, #fbbf24, #ea580c)' },
+      { letra: 'U', palavra: 'Uva', emoji: '🍇', cor: 'linear-gradient(135deg, #a78bfa, #7c3aed)' },
+    ];
+
+    const hints = [
+      "Vamos lá, Pedro! Você consegue! 💪",
+      "Preste atenção, Pedro! 👀",
+      "Pedro, fale bem alto e claro! 🗣️",
+      "Quase lá, Pedro! Tente de novo! 🎯",
+      "Pedro, respira fundo e tenta mais uma vez! 🌬️"
+    ];
+
+    let idx = 0;
+    let letraAtual = vogais[0];
+
+    function update() {
+      letraAtual = vogais[idx];
+      document.getElementById('letra').textContent = letraAtual.letra;
+      document.getElementById('emoji').textContent = letraAtual.emoji;
+      document.getElementById('palavra').textContent = letraAtual.letra + ' de ' + letraAtual.palavra;
+      document.getElementById('card').style.background = letraAtual.cor;
+      document.getElementById('hint').textContent = hints[Math.floor(Math.random()*hints.length)];
+      document.getElementById('progress').style.width = ((idx+1)/vogais.length*100) + '%';
+      document.getElementById('prevBtn').disabled = idx === 0;
+
+      const nextBtn = document.getElementById('nextBtn');
+      if (idx === vogais.length - 1) {
+        nextBtn.textContent = 'Finalizar, Pedro!';
+      } else {
+        nextBtn.textContent = 'Próxima →';
+      }
+    }
+
+    function speak(text) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'pt-BR'; u.rate = 0.85; u.pitch = 1.2;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }
+
+    function next() {
+      if (idx < vogais.length - 1) { idx++; update(); }
+      else {
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('complete').style.display = 'block';
+        localStorage.setItem('stars_vogais', '3');
+        createConfetti();
+      }
+    }
+
+    function prev() { if (idx > 0) { idx--; update(); } }
+
+    function createConfetti() {
+      const colors = ['#FF6B6B','#4ECDC4','#FFE66D','#FF8E53','#C44569','#A8E6CF'];
+      for (let i=0; i<50; i++) {
+        const el = document.createElement('div');
+        el.style.cssText = `position:fixed;left:${Math.random()*100}vw;top:-10px;width:10px;height:10px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'0'};animation:fall ${Math.random()*2+2}s ease-out forwards;pointer-events:none;z-index:9999;`;
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),4000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
