@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/vogais", "dest": "/vogais.html" },
+    { "src": "/formas", "dest": "/formas.html" },
+    { "src": "/numeros", "dest": "/numeros.html" },
+    { "src": "/fala", "dest": "/fala.html" }
+  ]
+}

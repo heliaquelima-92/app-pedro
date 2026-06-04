@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vogais - PigoKids</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+      color: white;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .container { max-width: 900px; margin: 0 auto; text-align: center; }
+
+    /* Header */
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+    .back-btn {
+      background: rgba(255,255,255,0.2); border: none; color: white;
+      padding: 12px 24px; border-radius: 50px; font-size: 1.1rem;
+      cursor: pointer; text-decoration: none; font-weight: bold;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .back-btn:hover, .back-btn:focus { background: rgba(255,255,255,0.4); outline: 3px solid #FFE66D; }
+    h1 { font-size: 2.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+    /* Progresso */
+    .progress-wrap { margin-bottom: 20px; }
+    .progress-bar { width: 100%; height: 16px; background: rgba(255,255,255,0.15); border-radius: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f59e0b); border-radius: 12px; transition: width 0.6s ease; }
+    .progress-text { font-size: 0.95rem; opacity: 0.85; margin-top: 6px; }
+
+    /* Card principal */
+    .game-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+      backdrop-filter: blur(12px);
+      border-radius: 32px;
+      padding: 35px 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    /* Pergunta */
+    .pergunta-box { margin-bottom: 25px; }
+    .pergunta-texto {
+      font-size: 1.6rem; font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      line-height: 1.4;
+      min-height: 70px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pergunta-emoji { font-size: 5rem; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+    /* Imagem grande */
+    .imagem-grande {
+      font-size: 7rem;
+      margin: 15px 0;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+
+    /* Opções */
+    .opcoes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .opcao-btn {
+      background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+      border: 3px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 28px 20px;
+      border-radius: 24px;
+      font-size: 3rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .opcao-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      background: linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.2));
+      border-color: rgba(255,255,255,0.6);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+    .opcao-btn:focus {
+      outline: 4px solid #FFE66D;
+      outline-offset: 4px;
+      transform: translateY(-5px) scale(1.05);
+    }
+    .opcao-btn:active { transform: translateY(2px) scale(0.98); }
+    .opcao-btn.certo {
+      background: linear-gradient(145deg, #22c55e, #16a34a) !important;
+      border-color: #4ade80 !important;
+      animation: pulse-certo 0.6s ease;
+    }
+    .opcao-btn.errado {
+      background: linear-gradient(145deg, #ef4444, #dc2626) !important;
+      border-color: #f87171 !important;
+      animation: shake 0.5s ease;
+    }
+    @keyframes pulse-certo { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+
+    /* Feedback */
+    .feedback-box {
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 20px;
+      transition: all 0.3s;
+    }
+    .feedback-box.show { background: rgba(255,255,255,0.1); }
+    .feedback-texto { font-size: 1.3rem; font-weight: bold; line-height: 1.4; }
+    .feedback-dica { font-size: 1.05rem; opacity: 0.9; margin-top: 8px; }
+
+    /* Botão próxima */
+    .btn-proxima {
+      background: linear-gradient(145deg, #fbbf24, #f59e0b);
+      color: #1a1a2e; border: none;
+      padding: 18px 45px;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #b45309, 0 12px 30px rgba(0,0,0,0.2);
+      transition: all 0.1s;
+      font-family: inherit;
+      display: none;
+      margin-top: 15px;
+    }
+    .btn-proxima:hover, .btn-proxima:focus {
+      outline: 3px solid #FFE66D; outline-offset: 3px;
+    }
+    .btn-proxima:active { transform: translateY(6px); box-shadow: 0 0 0 #b45309; }
+    .btn-proxima.show { display: inline-block; animation: pop 0.5s ease; }
+    @keyframes pop { 0%{transform:scale(0.5);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+    /* Comemoração */
+    .comemoracao {
+      display: none;
+      padding: 30px;
+    }
+    .comemoracao.show { display: block; animation: pop 0.6s ease; }
+    .comemoracao .trophy { font-size: 5rem; margin-bottom: 15px; }
+    .comemoracao h2 { font-size: 2.2rem; margin-bottom: 12px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+    .comemoracao p { font-size: 1.3rem; opacity: 0.95; }
+    .stars-big { font-size: 3rem; margin-top: 20px; }
+    .star { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.6); }
+
+    /* Confetes */
+    .confetti {
+      position: fixed; width: 12px; height: 12px;
+      animation: confetti-fall 3s ease-out forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Estrelas no topo */
+    .estrelas-topo { font-size: 1.8rem; margin-bottom: 10px; }
+    .estrela-ganha { animation: star-pop 0.5s ease; display: inline-block; }
+    @keyframes star-pop { 0%{transform:scale(0) rotate(-180deg)} 100%{transform:scale(1) rotate(0deg)} }
+
+    /* Indicador de foco para TV */
+    .tv-focus {
+      position: absolute;
+      top: -8px; left: -8px; right: -8px; bottom: -8px;
+      border: 4px solid #FFE66D;
+      border-radius: 28px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .opcao-btn:focus .tv-focus, .opcao-btn.tv-active .tv-focus { opacity: 1; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      .pergunta-texto { font-size: 1.2rem; }
+      .imagem-grande { font-size: 5rem; }
+      .opcao-btn { font-size: 2.2rem; padding: 22px 15px; }
+      .opcoes-grid { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="back-btn">← Voltar</a>
+      <h1>🔤 Vogais</h1>
+      <div style="width:100px"></div>
+    </div>
+
+    <div class="estrelas-topo" id="estrelasTopo"></div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+      <div class="progress-text">Pergunta <span id="numPergunta">1</span> de <span id="totalPerguntas">5</span></div>
+    </div>
+
+    <!-- ÁREA DO JOGO -->
+    <div id="gameArea">
+      <div class="game-card">
+        <div class="pergunta-emoji" id="perguntaEmoji">🍍</div>
+        <div class="pergunta-box">
+          <div class="pergunta-texto" id="perguntaTexto">Carregando...</div>
+        </div>
+
+        <div class="opcoes-grid" id="opcoesGrid">
+          <button class="opcao-btn" data-letra="A" onclick="responder(this, 'A')">
+            <span class="tv-focus"></span>A
+          </button>
+          <button class="opcao-btn" data-letra="E" onclick="responder(this, 'E')">
+            <span class="tv-focus"></span>E
+          </button>
+          <button class="opcao-btn" data-letra="I" onclick="responder(this, 'I')">
+            <span class="tv-focus"></span>I
+          </button>
+          <button class="opcao-btn" data-letra="O" onclick="responder(this, 'O')">
+            <span class="tv-focus"></span>O
+          </button>
+        </div>
+
+        <div class="feedback-box" id="feedbackBox">
+          <div class="feedback-texto" id="feedbackTexto"></div>
+          <div class="feedback-dica" id="feedbackDica"></div>
+        </div>
+
+        <button class="btn-proxima" id="btnProxima" onclick="proximaPergunta()">
+          Próxima →
+        </button>
+      </div>
+    </div>
+
+    <!-- COMEMORAÇÃO FINAL -->
+    <div id="comemoracao" class="comemoracao">
+      <div class="trophy">🎉🏆🎉</div>
+      <h2>Pedro, você completou as vogais! Que orgulho! 🏅</h2>
+      <p>Muito bem, Pedro! Você é um campeão! 🌟</p>
+      <div class="stars-big">
+        <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+      </div>
+      <br><br>
+      <a href="index.html" class="back-btn">Voltar ao Menu</a>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // DADOS DO JOGO
+    // ============================================================
+    var vogais = [
+      {
+        letra: "A",
+        palavra: "Abacaxi",
+        emoji: "🍍",
+        cor: "linear-gradient(135deg, #f472b6, #e11d48)",
+        pergunta: "Pedro, qual é a letra A de Abacaxi?",
+        dicas: [
+          "Quase, Pedro! Essa é a letra {errada}. A letra A aparece em Abacaxi, Amor e Avião.",
+          "Boa tentativa! A letra certa é A. Lembra do Abacaxi? 🍍",
+          "Não desanime, Pedro! A letra A é a primeira do alfabeto."
+        ]
+      },
+      {
+        letra: "E",
+        palavra: "Elefante",
+        emoji: "🐘",
+        cor: "linear-gradient(135deg, #60a5fa, #4f46e5)",
+        pergunta: "Pedro, qual é a letra E de Elefante?",
+        dicas: [
+          "Quase, Pedro! Essa é a letra {errada}. A letra E aparece em Elefante, Escola e Estrela.",
+          "Boa tentativa! A letra certa é E. O Elefante é enorme! 🐘",
+          "Não desanime, Pedro! A letra E é a segunda vogal."
+        ]
+      },
+      {
+        letra: "I",
+        palavra: "Igreja",
+        emoji: "⛪",
+        cor: "linear-gradient(135deg, #22d3ee, #0d9488)",
+        pergunta: "Pedro, qual é a letra I de Igreja?",
+        dicas: [
+          "Quase, Pedro! Essa é a letra {errada}. A letra I aparece em Igreja, Ilha e Índio.",
+          "Boa tentativa! A letra certa é I. A Igreja tem um sino! ⛪",
+          "Não desanime, Pedro! A letra I é bem no meio das vogais."
+        ]
+      },
+      {
+        letra: "O",
+        palavra: "Ovo",
+        emoji: "🥚",
+        cor: "linear-gradient(135deg, #fbbf24, #ea580c)",
+        pergunta: "Pedro, qual é a letra O de Ovo?",
+        dicas: [
+          "Quase, Pedro! Essa é a letra {errada}. A letra O aparece em Ovo, Olho e Onda.",
+          "Boa tentativa! A letra certa é O. O Ovo é redondinho! 🥚",
+          "Não desanime, Pedro! A letra O é bem redonda, igual o Ovo."
+        ]
+      },
+      {
+        letra: "U",
+        palavra: "Uva",
+        emoji: "🍇",
+        cor: "linear-gradient(135deg, #a78bfa, #7c3aed)",
+        pergunta: "Pedro, qual é a letra U de Uva?",
+        dicas: [
+          "Quase, Pedro! Essa é a letra {errada}. A letra U aparece em Uva, Urso e Unicórnio.",
+          "Boa tentativa! A letra certa é U. A Uva é roxinha! 🍇",
+          "Não desanime, Pedro! A letra U é a última vogal."
+        ]
+      }
+    ];
+
+    var todasVogais = ["A", "E", "I", "O", "U"];
+    var idx = 0;
+    var acertos = 0;
+    var tentativas = 0;
+    var bloqueado = false;
+    var focoAtual = 0;
+    var botoesOpcao = [];
+
+    // ============================================================
+    // SISTEMA DE ÁUDIO (Web Audio API)
+    // ============================================================
+    var audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    function somClique() {
+      try {
+        var ctx = getAudioCtx();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+      } catch(e) {}
+    }
+
+    function somAcerto() {
+      try {
+        var ctx = getAudioCtx();
+        var notas = [523, 659, 784, 1047]; // C, E, G, C
+        notas.forEach(function(freq, i) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
+          gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + i * 0.12 + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.25);
+          osc.start(ctx.currentTime + i * 0.12);
+          osc.stop(ctx.currentTime + i * 0.12 + 0.25);
+        });
+      } catch(e) {}
+    }
+
+    function somErro() {
+      try {
+        var ctx = getAudioCtx();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(250, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+      } catch(e) {}
+    }
+
+    function somComemoracao() {
+      try {
+        var ctx = getAudioCtx();
+        var notas = [523, 659, 784, 1047, 784, 1047, 1319];
+        notas.forEach(function(freq, i) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + i * 0.15 + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.3);
+          osc.start(ctx.currentTime + i * 0.15);
+          osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+        });
+      } catch(e) {}
+    }
+
+    function somProxima() {
+      try {
+        var ctx = getAudioCtx();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.2);
+      } catch(e) {}
+    }
+
+    // ============================================================
+    // FALA (Speech Synthesis)
+    // ============================================================
+    function falar(texto, rate, pitch) {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = 'pt-BR';
+      u.rate = rate || 0.9;
+      u.pitch = pitch || 1.15;
+      window.speechSynthesis.speak(u);
+    }
+
+    // ============================================================
+    // EMBARALHAR ARRAY
+    // ============================================================
+    function embaralhar(array) {
+      var arr = array.slice();
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+      }
+      return arr;
+    }
+
+    // ============================================================
+    // ATUALIZAR TELA
+    // ============================================================
+    function atualizarTela() {
+      var atual = vogais[idx];
+
+      // Atualizar progresso
+      document.getElementById('progress').style.width = (idx / vogais.length * 100) + '%';
+      document.getElementById('numPergunta').textContent = idx + 1;
+      document.getElementById('totalPerguntas').textContent = vogais.length;
+
+      // Atualizar pergunta
+      document.getElementById('perguntaEmoji').textContent = atual.emoji;
+      document.getElementById('perguntaTexto').textContent = atual.pergunta;
+
+      // Embaralhar opções (sempre 4: a vogal certa + 3 erradas)
+      var opcoes = [atual.letra];
+      var erradas = todasVogais.filter(function(v) { return v !== atual.letra; });
+      erradas = embaralhar(erradas).slice(0, 3);
+      opcoes = opcoes.concat(erradas);
+      opcoes = embaralhar(opcoes);
+
+      // Renderizar botões
+      var grid = document.getElementById('opcoesGrid');
+      grid.innerHTML = '';
+      opcoes.forEach(function(letra, i) {
+        var btn = document.createElement('button');
+        btn.className = 'opcao-btn';
+        btn.setAttribute('data-letra', letra);
+        btn.setAttribute('tabindex', '0');
+        btn.innerHTML = '<span class="tv-focus"></span>' + letra;
+        btn.onclick = function() { responder(btn, letra); };
+        grid.appendChild(btn);
+      });
+      botoesOpcao = Array.from(grid.querySelectorAll('.opcao-btn'));
+      focoAtual = 0;
+
+      // Resetar feedback
+      document.getElementById('feedbackBox').className = 'feedback-box';
+      document.getElementById('feedbackTexto').textContent = '';
+      document.getElementById('feedbackDica').textContent = '';
+      document.getElementById('btnProxima').className = 'btn-proxima';
+      bloqueado = false;
+      tentativas = 0;
+
+      // Falar pergunta automaticamente
+      setTimeout(function() {
+        falar(atual.pergunta, 0.85, 1.2);
+      }, 500);
+    }
+
+    // ============================================================
+    // RESPONDER
+    // ============================================================
+    function responder(btn, letraEscolhida) {
+      if (bloqueado) return;
+
+      somClique();
+
+      var atual = vogais[idx];
+      var certa = atual.letra;
+
+      if (letraEscolhida === certa) {
+        // ACERTOU!
+        bloqueado = true;
+        acertos++;
+        btn.classList.add('certo');
+
+        somAcerto();
+
+        var msg = "Muito bem, Pedro! Essa é a letra " + certa + " de " + atual.palavra + "! 🎉";
+        document.getElementById('feedbackBox').className = 'feedback-box show';
+        document.getElementById('feedbackTexto').textContent = msg;
+        document.getElementById('feedbackDica').textContent = "Você é demais, Pedro! Continue assim! 🌟";
+
+        falar(msg, 0.9, 1.3);
+
+        // Adicionar estrela
+        var estrelas = document.getElementById('estrelasTopo');
+        var star = document.createElement('span');
+        star.className = 'estrela-ganha star';
+        star.textContent = '⭐';
+        estrelas.appendChild(star);
+
+        // Mostrar botão próxima
+        setTimeout(function() {
+          document.getElementById('btnProxima').className = 'btn-proxima show';
+          document.getElementById('btnProxima').focus();
+        }, 1200);
+
+        // Confetes
+        createConfetti(30);
+
+      } else {
+        // ERROU
+        btn.classList.add('errado');
+        tentativas++;
+
+        somErro();
+
+        var dica = atual.dicas[Math.min(tentativas - 1, atual.dicas.length - 1)];
+        dica = dica.replace('{errada}', letraEscolhida);
+
+        document.getElementById('feedbackBox').className = 'feedback-box show';
+        document.getElementById('feedbackTexto').textContent = dica;
+        document.getElementById('feedbackDica').textContent = "Tente de novo, Pedro! Você consegue! 💪";
+
+        falar(dica, 0.85, 1.1);
+
+        // Remover classe errado depois de um tempo
+        setTimeout(function() {
+          btn.classList.remove('errado');
+        }, 800);
+      }
+    }
+
+    // ============================================================
+    // PRÓXIMA PERGUNTA
+    // ============================================================
+    function proximaPergunta() {
+      somProxima();
+
+      if (idx < vogais.length - 1) {
+        idx++;
+        atualizarTela();
+      } else {
+        // FIM DO JOGO
+        document.getElementById('gameArea').style.display = 'none';
+        document.getElementById('comemoracao').classList.add('show');
+        document.getElementById('progress').style.width = '100%';
+        document.getElementById('progress-text').textContent = 'Completado!';
+
+        localStorage.setItem('stars_vogais', '3');
+
+        somComemoracao();
+        falar("Pedro, você completou as vogais! Que orgulho! Você é um campeão!", 0.85, 1.3);
+        createConfetti(80);
+      }
+    }
+
+    // ============================================================
+    // CONFETES
+    // ============================================================
+    function createConfetti(qtd) {
+      var colors = ['#FF6B6B','#4ECDC4','#FFE66D','#FF8E53','#C44569','#A8E6CF','#f472b6','#60a5fa'];
+      for (var i = 0; i < qtd; i++) {
+        var el = document.createElement('div');
+        el.className = 'confetti';
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        el.style.animationDelay = (Math.random() * 0.5) + 's';
+        el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        el.style.width = (Math.random() * 8 + 8) + 'px';
+        el.style.height = el.style.width;
+        document.body.appendChild(el);
+        setTimeout(function(e) { return function() { e.remove(); }; }(el), 4000);
+      }
+    }
+
+    // ============================================================
+    // NAVEGAÇÃO POR TECLADO (TV)
+    // ============================================================
+    document.addEventListener('keydown', function(e) {
+      if (!botoesOpcao.length || bloqueado) return;
+
+      var cols = 2;
+      var rows = Math.ceil(botoesOpcao.length / cols);
+      var currentRow = Math.floor(focoAtual / cols);
+      var currentCol = focoAtual % cols;
+
+      switch(e.key) {
+        case 'ArrowRight':
+          e.preventDefault();
+          if (currentCol < cols - 1 && focoAtual + 1 < botoesOpcao.length) {
+            focoAtual++;
+          }
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          if (currentCol > 0) {
+            focoAtual--;
+          }
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          if (currentRow < rows - 1 && focoAtual + cols < botoesOpcao.length) {
+            focoAtual += cols;
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          if (currentRow > 0) {
+            focoAtual -= cols;
+          }
+          break;
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (botoesOpcao[focoAtual]) {
+            botoesOpcao[focoAtual].click();
+          }
+          return;
+      }
+
+      botoesOpcao[focoAtual].focus();
+    });
+
+    // ============================================================
+    // INICIAR
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      atualizarTela();
+    });
+  </script>
+</body>
+</html>
